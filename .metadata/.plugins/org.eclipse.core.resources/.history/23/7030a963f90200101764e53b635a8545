@@ -1,0 +1,9 @@
+package edu.kh.jdbc;
+
+public class JDBCExample4 {
+// 부서 이름을 입력받아 해당 부서에 근무하는 사원의 사번, 이름, 부서명, 직급명을 구하되 반드시 직급코드에 대해 오름차순으로 조회한다
+	
+	
+	
+
+}

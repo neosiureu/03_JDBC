@@ -1,0 +1,35 @@
+package edu.kh.jdbc;
+
+public class JDBCExample5 {
+
+	public static void main(String[] args) {
+		// 아이디, 비밀번호, 이름을 입력받아 TB_USER 테이블이라는 것을 만들어 삽입하기
+		/*
+		 * > what is PreparedStatment?  
+  
+java.sql.PreparedStatment
+SQL 중간에 ? (위치 홀더)가 존재 => 이를 작성하여 ?자리에 java에서의 변수 값을 대입할 준비가 되어 있는 Statement객체
+  
+장점1) SQL 작성이 간단해 짐
+
+장점2) ? 위치에 값 대입 시 자료형에 맞는 형태의 리터럴이 자동 대입
+  가령 ex4의 예시에서 ''를 문자열 양쪽에 붙일 필요가 없음
+  
+String을 그냥 대입만 하면 홑따옴표 여부를 신경쓸 필요 없이 그냥 ' '를 붙여준다.
+int를 대입하면 Number형으로 자동으로 값만 알아서 들어 감
+
+
+장점3) 성능과 속도 면에서의 우위
+  
+PreparedStatement는 Statment의 자식이기에 기존 멤버와 메서드를 그대로 물려받음
+
+> 정보
+ Statement도 SELECT INSERT DELETE UPDATE전부 다 가능하다. 
+ PrepareStatement역시 쿼리문이 전부 가능하다
+		 * */
+		
+	
+		
+	}
+
+}
