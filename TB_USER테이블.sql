@@ -22,7 +22,7 @@ VALUES(SEQ_USER_NO.NEXTVAL, 'user01', 'pass01', '유저일', DEFAULT );
 INSERT INTO TB_USER 
 VALUES(SEQ_USER_NO.NEXTVAL, 'user02', 'pass02', '유저이', DEFAULT );
 
-SELECT EMP_ID 사번 , EMP_NAME 이름,  DECODE(substr (emp_no,8,'1' ), 1, 'M', 2, 'F' ) 성별 ,  salary 급여 , job_name 직급명, nvl (dept_title, '없음') 부서명   
+SELECT EMP_ID 사번 , EMP_NAME 이름,  DECODE(substr (emp_no,8,'1' ), 1, 'M', 2, 'F' ) 성별 ,  salary 급여 , job_name 직급명, nvl (dept_title, '없음') 부서명
 FROM EMPLOYEE JOIN job USING (job_code) left JOIN DEPARTMENT  ON (DEPARTMENT.DEPT_ID = EMPLOYEE.DEPT_CODE)  
 WHERE (SALARY>3000000) AND (salary< 4000000) AND  DECODE(substr (emp_no,8,'1' ), 1, 'M', 2, 'F' )= 'M'
 ORDER BY SALARY DESC;
