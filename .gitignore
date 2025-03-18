@@ -5,8 +5,8 @@ driver.xml
 
 META-INF
 Servers
-.classpath
-.project
+#.classpath
+#.project
 
 ### Eclipse ###
 .metadata
@@ -17,7 +17,7 @@ tmp/
 *.swp
 *~.nib
 local.properties
-.settings/
+#.settings/
 .loadpath
 .recommenders
 
