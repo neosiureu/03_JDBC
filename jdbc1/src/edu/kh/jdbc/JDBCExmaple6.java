@@ -3,6 +3,7 @@ package edu.kh.jdbc;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Scanner;
 
 // 문제: 아이디, 비밀번호 이름을 유저로부터 입력받아 아이디와 비밀번호가 일치하는 사용자가 존재한다면 그 이름을 수정한다. 즉 UPDATE구문을 사용하라는 이야기
@@ -45,38 +46,42 @@ public class JDBCExmaple6 {
 			Connection conn = null;
 			PreparedStatement pstmt = null;
 			// SELECT가 아니라서 ResultSet이라는 객체는 선언 자체가 불필요
+			// ResultSet rs = null;
 			Scanner sc = null;
 			
 			try {
 				// 2단계
 				// drivermanager로 connection타입의 객체를 생성한다.
-				Class.forName("oracle.jdbc.driver.OracleDriver");
-				String url = "jdbc:oracle:thin:@localhost:1521:XE";			
+				Class.forName("oracle.jdbc.driver.OracleDriver"); // 전제1) 오라클 드라이버를 메모리에 로드하는 과정
+				
+				
+				String url = "jdbc:oracle:thin:@localhost:1521:XE"; // DB에 연결할 수 있는 주소
 				String userName = "kh";
-				String password = "kh1234";
-		
-				conn = DriverManager.getConnection(url, userName, password);
+				String password = "kh1234";	
+				conn = DriverManager.getConnection(url, userName, password); // 전제2) DB의 연결정보를 설정 => 커넥션에 대한 객체를 반환
+				
 				System.out.println(conn);
 				
 				
 				// 3단계
+				conn.setAutoCommit(false);
+				
 				sc = new Scanner(System.in);
 				
-				System.out.println("아이디 입력: ");
-				String id = sc.nextLine();
+				System.out.print("아이디 입력: ");
+				String id = sc.nextLine();				
 				
-				
-				System.out.println("비밀번호 입력: ");
+				System.out.print("비밀번호 입력: ");
 				String pw = sc.nextLine();
-				
-				
-				System.out.println("이름 입력: ");
+								
+				System.out.print("이름 입력: ");
 				String name = sc.nextLine();	
 				
 				
 				String sql = """
-						UPDATE TB_USER SET USER_NAME = ? WHERE USER_ID = ?; 
-
+						UPDATE TB_USER 
+						SET USER_NAME = ? 
+						WHERE USER_ID = ? AND USER_PW = ? 
 						""";
 				
 				
@@ -95,17 +100,17 @@ public class JDBCExmaple6 {
 				
 				//pstmt.set자료형(?의 순서, 대입값)
 				
-				pstmt.setString(1,id);
-				pstmt.setString(2,pw);
+				pstmt.setString(1,name);
+				pstmt.setString(2,id);
+				pstmt.setString(3,pw);
+
 				
 				/*
 				 > DML 수행 전에 해야 할 것: COMMIT과 ROLLBACK 
 				 => 자동으로 문 하나마다 COMMIT될 일이 없게 만들어야 한다. 커밋 여부를 개발자가 제어하고 싶기 때문
 				 * */
 				
-				conn.setAutoCommit(false);
 				
-				// 6단계: SQL수행 후 결과를 반환 받는다
 				
 			//	executeUpdate()는 DML => 행의 개수를 반환. 실패시 0을 반환
 			//	executeQuery()는 DQL => resultset을 반환
@@ -113,18 +118,25 @@ public class JDBCExmaple6 {
 				
 				// pstmt에서는 Query를 하던 Update를 하던 매개변수 자리를 비워놓아야 한다!
 				
+				// 6단계: SQL수행 후 결과를 반환 받는다
 				int result = pstmt.executeUpdate();
+				// excecuteQuery일 경우 resultSet, 즉 뭔진 몰라도 행과 열의 교차점 값에 해당하는 객체를 반환한다 => 인자로 sql로 들어가야 함
+				// excecuteUpdate일 경우 숫자만 반환 => 인자가 비어있어야 함
+
+				
+				
 				// 7단계: result값에 따른 결과 처리 + 트랜잭션의 제어 처리
 				if(result>0) {
 					// insert에 만약 성공했다면
-					System.out.println(name+"님이 추가되었습니다");
+					System.out.println(name+"님을 수정성공");
 					
 					// 삽입에 성공할 시 commit을 반드시 수행하고 싶다.
 					conn.commit();
 					// DB에 INSERT한 것을 영구반영하겠다
 				}
+			
 				else {
-					System.out.println("추가 실패");
+					System.out.println("수정 실패");
 					conn.rollback();
 				}
 
