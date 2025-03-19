@@ -95,8 +95,7 @@ public class JDBCTemplate {
 	/** 전달받은 커넥션에서 수행한 SQL을 Commit하는 함수
 	 * @param conn
 	 */
-	public static void commit(Connection conn) {
-		
+	public static void commit(Connection conn) {		
 		try {
 			
 			if(conn!=null && !conn.isClosed()) // 널포인터를 가리키거나 닫혀있지 않았을 때만

@@ -5,12 +5,14 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import static edu.kh.jdbc.common.JDBCTemplate.*;
 // import static? 지정된 경로에 존재하는 static구문을 모두 얻어와 
 // 클래스명.메서드명()이 아닌 그냥 메서드명()만 작성해도 호출이 가능하게 함
 
-
+import edu.kh.jdbc.common.JDBCTemplate;
 import edu.kh.jdbc.dto.User;
 
 //MVC 중 Model은 Service DAO DTO
@@ -105,8 +107,454 @@ public class UserDAO {
 		
 		return user;
 	}
+
+	/**
+	 * @param conn: DB연결 정보가 담겨있는 Connection 객체
+	 * @param user: 입력 받은 id, pw, name이 세팅된 객체
+	 * @return Insert한 결과 행의 개수
+	 */
+	public int insertUser(Connection conn, User user) throws Exception {
+		// 1. 결과를 저장하는 변수를 선언
+
+		int result = 0;
+		
+		try {
+
+			// 2. SQL문의 작성
+			// SQL수행중에 예외가 발생하긴 할텐데 
+			// catch로 처리하지 않고 throws를 이용해 호출부로 던짐
+			
+			String sql = """
+					INSERT INTO TB_USER 
+VALUES(SEQ_USER_NO.NEXTVAL, ?, ?, ?, DEFAULT ) 
+					
+					""";
+			//안에 세미콜론 없음 주의. 밖에는 있어야
+			
+			// 3.PreparedStatement객체 생성
+			pstmt = conn.prepareStatement(sql);
+			
+			// 4. 물음표 위치에 값을 세팅
+			
+			pstmt.setString(1, user.getUserId()); // 이미 입력했던 ID값이 들어옴
+			pstmt.setString(2, user.getUserPw());
+			pstmt.setString(3, user.getUserName());
+			
+			
+			// 5. sql문을 수행 후 결과를 반환 받기
+			
+			result = pstmt.executeUpdate(); // 버스에 sql문을 태워 보냈으므로 
+			//그 결과를 result로 전달하여 반환할 수 있도록
+			
+		} 
+		
+		finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	/** 2. User 전체 조회하는 DAO
+	 * @param conn
+	 * @return 유저 객체가 담긴 리스트
+	 */
+	public List selectAllUser(Connection conn) throws Exception {
+		// 1. 결과를 저장하는 변수를 선언
+		List<User> userList = new ArrayList<User>();
+		
+		try {
+			// 2. SQL문의 작성
+			
+			// String sql = "SELECT * FROM TB_USER"  
+			// enroll date를 변환하기 위해 *을 쓰지 않는다
+			
+			String sql = """
+					SELECT USER_NO, USER_ID, USER_PW, TB_USER.USER_NAME, TO_CHAR(ENROLL_DATE, ' YYYY "년" MM"월" DD "일" ' ) ENROLL_DATE  FROM TB_USER ORDER BY USER_NO
+					""";
+			
+			
+			// 3.PreparedStatement객체 생성
+					
+			pstmt  =conn.prepareStatement(sql);
+			// 4. 물음표 위치에 값을 세팅
+							
+			// 5. sql문을 수행 후 결과를 반환 받기
+			rs = pstmt.executeQuery();
+			
+			// 6. 조회 결과를 한 행씩 접근하여 얻어온다
+			while (rs.next()) {
+				int userNo = rs.getInt("USER_NO");
+				String userId = rs.getString("USER_ID");
+				String userPw = rs.getString("USER_PW");
+				String userName = rs.getString("USER_NAME");
+				String enrollDate = rs.getString("ENROLL_DATE");
+				// 위 sql문을 설정할 때 이미 SELECT문에서 
+				// TO_CHAR로 변환한 상태로 sql문이 작성되었기 때문에 그냥 String으로 받아도 됨
+				
+				// User 객체를 생성하여 일단 세팅하고
+				User user = new User(userNo, userId, userPw, userName, enrollDate);
+				
+				userList.add(user);
+				// 일단 세팅하고 그를 ArrayList에 담아야함
+
+			}			
+			
+			// select 시 잘 모르면 while, 한 행만 나오면 if
+			
+		} 
+
+		finally {
+		 JDBCTemplate.close(rs);
+		 JDBCTemplate.close(pstmt);
+		}
+		
+		
+	
+				
+
+		
+
+		
+		return userList ;
+	}
+
 	
 
+	public List selectName(Connection conn, String keyword) throws Exception {
+		// 1. 결과를 저장하는 변수를 선언
+		
+		List <User>  serachList  = new ArrayList<User>();
+		
+		
+		try {
+			
+			// 2. SQL문의 작성
+			
+			String sql = """
+					
+					SELECT USER_NO, USER_ID, USER_PW, TB_USER.USER_NAME, TO_CHAR(ENROLL_DATE, ' YYYY "년" MM"월" DD "일" ' ) ENROLL_DATE  
+					FROM TB_USER WHERE USER_NAME LIKE '%' || ? || '%'  ORDER BY USER_NO	
+					""";
+			
+			// 물음표가 진짜 물음표가 아님을 강조하기 위해
+			
+			
+			// 3.PreparedStatement객체 생성
+			pstmt = conn.prepareStatement(sql);
+			
+			
+			// 4. 물음표 위치에 값을 세팅
+			
+			pstmt.setString(1,keyword);
+			
+
+					
+			// 5. sql문을 수행 후 결과를 반환 받기
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				int userNo = rs.getInt("USER_NO");
+				String userId = rs.getString("USER_ID");
+				String userPw = rs.getString("USER_PW");
+				String userName = rs.getString("USER_NAME");
+				String enrollDate = rs.getString("ENROLL_DATE");
+				
+				User user = new User(userNo, userId, userPw, userName, enrollDate);
+				serachList.add(user);
+				
+			}
+			
+			
+			
+		} 
+		
+		finally 
+		{
+			JDBCTemplate.close(rs);
+			JDBCTemplate.close(pstmt);
+			
+			
+		}
+		
+		
+
+
+		
+		return serachList ;
+	}
+
+	
+	
+	/** 4. USER_NO를 입력받아 정확히 일치하는 유저만 조회
+	 * @param conn
+	 * @param input
+	 * @return User객체이지만 null일 수 있음
+	 */
+	public User selectUser(Connection conn, int input) throws Exception {
+
+		// 1. 결과를 저장하는 변수를 선언
+		User user = null;
+
+
+		
+		try {
+			// 2. SQL문의 작성
+			
+			String sql = """
+					SELECT USER_NO, USER_ID, USER_PW, TB_USER.USER_NAME, TO_CHAR(ENROLL_DATE, ' YYYY "년" MM"월" DD "일" ' ) ENROLL_DATE  
+					FROM TB_USER WHERE USER_NO = ? 
+					""";
+			// 3.PreparedStatement객체 생성
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			
+			
+			// 4. 물음표 위치에 값을 세팅
+			
+			pstmt.setInt(1, input);
+					
+			// 5. sql문을 수행 후 결과를 반환 받기
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				int userNo = rs.getInt("USER_NO");
+				String userId = rs.getString("USER_ID");
+				String userPw = rs.getString("USER_PW");
+				String userName = rs.getString("USER_NAME");
+				String enrollDate = rs.getString("ENROLL_DATE");
+				
+				user = new User(userNo, userId, userPw, userName, enrollDate);
+				
+			}
+			
+			
+			
+
+			
+		} 
+		
+		finally {
+			JDBCTemplate.close(rs);
+			JDBCTemplate.close(pstmt);
+			
+		}
+		
+		
+		
+		
+		return user;
+		
+	}
+
+
+	/** USER_NO를 입력받아 일치하는 User를 삭제하는 DAO
+	 * @param conn
+	 * @param input
+	 * @return
+	 * @throws Exception
+	 */
+	public int deletetUser(Connection conn, int input) throws Exception {
+		// 1. 결과를 저장하는 변수를 선언
+		
+		int result=0;
+		
+		try {
+		// 2. SQL문의 작성
+		
+		String sql = """
+				DELETE FROM TB_USER WHERE USER_No = ?
+				""";
+		// 3.PreparedStatement객체 생성
+		
+		pstmt = conn.prepareStatement(sql);
+
+		
+		// 4. 물음표 위치에 값을 세팅
+		
+
+		pstmt.setInt(1, input);
+		
+		
+		
+		// 5. sql문을 수행 후 결과를 반환 받기 (while또는 if)
+		
+		result = pstmt.executeUpdate();
+		}
+		
+		finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+	
+	
+
+	/** ID와 PW가 일치하는 회원의 USER_NO만을 반환하는 DAO
+	 * @param conn
+	 * @param id
+	 * @param pw
+	 * @return UserNo
+	 */
+	public int selectUser(Connection conn, String id, String pw) throws Exception {
+		int userNo =0;
+
+		// 1. 결과를 저장하는 변수를 선언
+
+	
+		
+		try {
+			// 2. SQL문의 작성
+			
+			String sql  = """
+				 SELECT USER_NO FROM TB_USER WHERE USER_ID = ? AND USER_PW = ?
+					""";
+			
+			// 3.PreparedStatement객체 생성
+			
+			pstmt = conn.prepareStatement(sql);
+			// 4. 물음표 위치에 값을 세팅
+
+			pstmt.setString(1,id );
+			pstmt.setString(2,pw );
+			
+			rs = pstmt.executeQuery();
+
+			// 5. sql문을 수행 후 결과를 반환 받기 (while또는 if)
+
+			// 조회된 행은 무조건 한 행
+			if(rs.next()) {
+				userNo = rs.getInt("USER_NO");
+			}
+			
+		} 
+		
+		finally {
+			close(rs);
+			close(pstmt);
+		}
+		
+		return userNo;
+	}
+
+	
+	
+	/** userNo가 일치할 경우 일치하는 회원의 이름을 수정하는 DAO
+	 * @param conn
+	 * @param userNewName
+	 * @param userNo
+	 * @return
+	 */
+	public int updateName(Connection conn, String userNewName, int userNo) throws Exception {
+		
+		int result =0;
+		
+		try {
+			String sql = """ 
+					UPDATE TB_USER SET USER_NAME = ?  WHERE USER_NO = ?
+					""";
+			
+			
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, userNewName);
+			pstmt.setInt(2, userNo);
+
+			result = pstmt.executeUpdate();
+			
+		} 
+
+		finally {
+			close(pstmt);
+		}
+		
+
+		return result;
+	}
+
+	/** 아이디를 중복인지 확인해주는 DAO로 0이나 1이라는 count를 반환
+	 * @param conn
+	 * @param userId
+	 * @return
+	 */
+	public int idCheck(Connection conn, String userId) throws Exception {
+		int count =0;
+
+		// 1. 결과를 저장하는 변수를 선언
+		
+		try {
+			// 2. SQL문의 작성
+			
+			String sql ="""
+					SELECT COUNT(*) FROM TB_USER WHERE USER_ID = ?
+					""";
+			
+			
+			// count(*)를 이용해야 반환 값이 하나인가 0인가가 나옴
+			
+			
+			// 3.PreparedStatement객체 생성
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			// 4. 물음표 위치에 값을 세팅
+
+			pstmt.setString(1, userId);
+								
+			
+			
+			// 5. sql문을 수행 후 결과를 반환 받기 (while또는 if)
+			
+			rs=pstmt.executeQuery();
+			
+			if(rs.next()) {
+				count = rs.getInt(1);
+				// 조회된 컬럼 순서번호를 이용해 1번의 컬럼 값을 얻어 온다
+				
+			}
+			
+			
+			
+		} 
+		
+		finally {
+			JDBCTemplate.close(rs);
+			JDBCTemplate.close(pstmt);
+		}
+
+		
+		
+		
+		
+		return count;
+	}
+	
+
+		
+				
+		
+	
+
+
+
+	
+	
+
+
+	
+			// 1. 결과를 저장하는 변수를 선언
+	
+			// 2. SQL문의 작성
+			
+			// 3.PreparedStatement객체 생성
+			
+			// 4. 물음표 위치에 값을 세팅
+					
+			// 5. sql문을 수행 후 결과를 반환 받기 (while또는 if)
+			
+
+	
 	
 	
 	
