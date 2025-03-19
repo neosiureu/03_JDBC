@@ -137,7 +137,7 @@ public class UserView {
 					break;
 				}
 				
-				System.out.println(userId+" 는 이미 사용중인 아이디입니다. 다시 입력해주세요.");
+				System.out.println("이미 사용중인 아이디입니다. 다시 입력해주세요.");
 				
 				
 			}
@@ -156,8 +156,8 @@ public class UserView {
 			
 			User user = new User();
 			user.setUserId(userId);
-			user.setUserId(userPassword);
-			user.setUserId(userName);
+			user.setUserPw(userPassword);
+			user.setUserName(userName);
 			
 			// userList에 여기서 생성한 것을 add해야 함
 			
@@ -168,6 +168,15 @@ public class UserView {
 		// 위 for를 통해 입력받은 사용자에 대해 insert
 		// 결과는 삽입된 행의 숫자를 받도록 한다 => 그거랑 같아야만 commit할 수 있으니까
 		int result = service.multiInsertUser(userList);
+		
+		if(result == userList.size()) {
+			System.out.println("전체 삽입을 성공했습니다.");
+			
+		}
+		
+		else {
+			System.out.println("모종의 이유로 삽입에 실패!");
+		}
 		
 		
 		

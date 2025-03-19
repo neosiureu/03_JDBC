@@ -40,7 +40,7 @@ public class UserView2 {
 	
 	/** User 관리 프로그램 메인 메뉴
 	 */
-	public void mainMenu() {
+	public void mainMenu2() {
 		
 		int input = 0;
 		

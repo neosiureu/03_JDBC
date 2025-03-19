@@ -358,19 +358,31 @@ public class UserService {
 		
 				for(User u: userList) {
 					int result = dao.insertUser(conn, u);
+					count+=result; // 성공했으면 하나가 들어나고 아니면 안 늘어남
+					
 				}
-				
-		
-		
 		
 		//4) DML을 했다면 commit/ rollback
 		
 		
+		// 전체 삽입 성공시에만 성공
+		if(count== userList.size()) {
+			JDBCTemplate.commit(conn);
+		}
+		
+		else {
+			JDBCTemplate.rollback(conn);
+		}
+				
 		//5) 다 쓴 커넥션에 대한 자원 반환 (close메서드 호출)
+		
+				
+		JDBCTemplate.close(conn);		
 		
 		
 		//6) 결과를 상위 단인 view에게 리턴
-		return 0;
+		
+		return count;
 	}
 
 
