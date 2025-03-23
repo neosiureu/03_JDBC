@@ -28,12 +28,11 @@ DB의 특정 테이블의 한 행의 데이터를 저장할 수 있는 형태로
 @AllArgsConstructor
 @ToString
 
-public class User {
-	private int userNo;
-	private String userId;
-	private String userPw;
-	private String userName;
-	private String enrollDate;
+public class Todo {
+	private int todoNo;
+	private String title;
+	private String  complete;
+	private String writeDate;
 	
 	
 	/*

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+
+<!-- 마크업에서의 주석 -->
+
+<!-- ctrl + shift + /로 주석을 만들 수 있다 -->
+
+<!-- 
+
+
+
+범위주석도 가능
+
+
+
+
+
+ -->
+
+ 
+
+ <!--  
+
+ 	DB연결을 위한 정보들을 별도 파일에 작성하여
+
+ 	읽어오는 형식으로 코드를 변경.
+
+ 	
+
+ 	이유1: Github에 DB연결정보를 올리면 해킹이 쉽다 => 따라서 보안적 측면에서 코드를 직접 보지 못한다
+
+ 	
+
+ 	이유2: 혹시라도 연결하는 db의 정보가 변경될 경우 JAVA코드가 아닌 읽어오는 파일의 내용을 수정하면 되기 때문에 
+
+ 	JAVA의 코드를 수정하는 것이 아니다.  따라서 추가적인 컴파일이 필요 없다.
+
+ 	따라서 개발 시간이 단축 된다. 
+
+ 	클래스에 있으면 가령 password가 한번 바뀌면 클래스 파일마다 다 바꿔야 하며, 클래스의 재컴파일 시 시간이 많이 들게 된다
+
+ 	
+
+ -->
+
+
+
+
+
+
+
+<comment>driver .xml file creat!!!</comment>
+
+
+
+<!-- entry 태그 (key:value)를 묶어서 다룬다  
+
+-->
+
+
+
+<entry key="driver">oracle.jdbc.driver.OracleDriver</entry>
+
+
+
+<entry key="url">jdbc:oracle:thin:@localhost:1521:XE</entry>
+
+
+
+<!-- 키에 따른 실제로 다루는 값이 주소  -->
+
+
+
+<entry key="userName">kh</entry>
+
+
+
+<entry key="password">kh1234</entry>
+
+
+
+
+
+
+
+</properties>

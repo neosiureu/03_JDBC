@@ -5,6 +5,7 @@ import java.util.List;
 
 import edu.kh.jdbc.common.JDBCTemplate;
 import edu.kh.jdbc.dao.UserDAO;
+import edu.kh.jdbc.dto.Member;
 import edu.kh.jdbc.dto.User;
 
 // MVC 중 Model은 Service DAO DTO
@@ -383,6 +384,13 @@ public class UserService {
 		//6) 결과를 상위 단인 view에게 리턴
 		
 		return count;
+	}
+
+
+
+	public int enroll(Member member) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 
